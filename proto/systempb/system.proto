@@ -1,0 +1,26 @@
+// protoc  --go_out=.\proto\systempb    .\proto\systempb\*.proto
+syntax = "proto3";
+
+package systempb;
+option go_package = "./;systempb";
+
+// 消息Id
+enum MsgId {
+    Msg_None = 0;
+    Msg_NewConn = 1;    // 新连接
+    Msg_NewUser = 2;    // 新用户
+    Msg_UserReq = 3;    // 用户请求
+    Msg_UserRsp = 4;    // 用户响应
+}
+
+// 通用消息
+message Message {
+    MsgId msg_id = 1;
+    bytes data = 2;
+}
+
+message NewUser {
+    int64 PlatformId = 1;   // 平台Id
+    string UserId = 2;      // 用户Id
+    string RoomId = 3;      // 房间Id
+}
