@@ -1,0 +1,214 @@
+//  
+syntax = "proto3";
+
+package gamepb;
+option go_package = "./;gamepb";
+import "google/protobuf/timestamp.proto";
+
+// 请求/响应码
+enum CmdId {
+  DCI_None = 0;
+  DCI_ServerTime = 1000; // Req: 空包 Res: ServerTimeRes 服务器时间
+  DCI_JoinRoom = 1001; // Req: JoinRoomReq 加入房间
+  DCI_LeaveRoom = 1002; // Req: 空包 离开房间
+  DCI_JoinGame = 1003; // Req: JoinGameReq Res: 加入游戏
+  DCI_LeaveGame = 1004; // Req: 空包 离开游戏
+  DCI_KickUser = 1005; // Req:KickPlayerReq 踢出用户
+  DCI_StartGame = 1006; // Req: 空包 开始游戏
+  DCI_ReadyGame = 1007; // 准备游戏
+  DCI_CancelReady = 1008; // 取消准备游戏
+  DCI_CloseGame = 1009; // 强行关闭游戏
+  DCI_CancelTrusteeship = 1010; // 取消托管 Req: 空包 Res: CancelTrusteeshipNotify
+  DCI_GameSetting = 1011; // 游戏设置
+
+  DCI_GameBroad = 2002; // Req: 空包 Res: GameBroad 获取游戏快照
+  DCI_SyncProcess = 2006; // Req: 空包 Res: GameProcessData 同步游戏进程
+  DCI_RefreshMember = 2013; // RefreshMemberReq 刷新权限
+
+  DCI_Rank = 10000; // Req: Rankreq ResRankresp  获取排行榜
+
+  DCI_AddRobot = 30000; // Req: 空包 添加机器人
+  DCI_GetCustomizeConfig = 30001; // Req：空包，Res：CustomizeConfig 获取自定义配置
+  
+  DCI_Command = 30002; // 命令
+}
+
+message RefreshMemberReq {
+  string uid = 1;
+  MemberType member =2; // 角色
+}
+
+message CommandReq {
+  string str = 1;
+}
+
+message CustomizeConfig {
+  string config_json = 1;
+}
+
+enum MemberType{
+  MT_None = 0;
+  MT_Owner = 1; // 房主
+  MT_Admin = 2; // 管理员
+  MT_Member = 3; // 成员
+}
+
+message JoinRoomReq {
+  string uid = 1; // 玩家uid
+  string room_id = 2; // 房间id
+  MemberType member = 3; // 角色
+  string name = 4; // 玩家名
+  string avatar = 5; // 玩家头像
+  string platformId = 6; // 平台ID
+  string ext = 7; // 客户端扩展配置
+}
+
+message JoinGameReq {
+  string uid = 1; // 玩家uid
+  MemberType member = 2; // 角色? 可能改变
+  int32 game_position = 3; // 座位号
+}
+
+//踢出游戏
+message KickPlayerReq{
+  string uid = 1;
+}
+
+// GameStatus 游戏状态
+enum GameStatus {
+  GS_None = 0;
+  GS_Wait = 1; // 等待中
+  GS_Countdown = 2; // 倒计时中
+  GS_Start = 3; // 游戏开始
+  GS_End = 4; // 游戏结束
+}
+
+// 游戏快照信息
+message GameBroad {
+  GameStatus game_status = 1; // 游戏状态
+  repeated Player players = 2; // 玩家信息
+  int64 start_time = 3; // 状态开始时间
+  int64 end_time = 4; // 状态结束时间（一般仅倒计时有，其他时候为0）
+  GameProcessData process_data = 5; // 游戏进程数据
+  GameEndData end_data = 6; // 游戏结束数据
+  bool force_end = 7; // 是否强制结束
+  bool close_btn_show = 8; // 是否显示强制关闭按钮
+
+  Config config = 9; // 游戏配置
+  Setting setting = 10; // 游戏设置
+
+  // 游戏配置
+  message Config {
+    repeated int32 ticket = 1; // 门票配置选项
+  }
+
+  // 游戏设置
+  message Setting {
+    int32 ticket = 1; // 门票选项
+    int32 custom_ticket = 2; // 自定义门票(如果大于0表示使用自定义门票)
+    int32 game_round = 3; // 游戏轮数
+    int64 action_timeout_sec = 4; // 玩家行动倒计时(以秒为单位)
+  }
+}
+
+message GameEndData{
+  repeated Rank rank_list = 1; // 排行榜
+}
+
+message Rank {
+  int32 rank = 1; // 排名（1为获胜者或获胜队伍）
+  string user_id = 2; // 玩家ID
+}
+
+// 玩家信息
+message Player {
+  // 基本信息
+  string user_id = 1; // 玩家ID
+  string name = 2; //  玩家名
+  string avatar = 3; // 玩家头像
+  int32 coins = 4; // 玩家余额
+  bool robot = 5; // 是否是机器人（后端用）
+
+  // 房间内信息
+  MemberType member = 22; // 角色
+  int32 seat = 23; // 座位号
+  bool ready = 24; // 是否准备
+  int64 countdown_time = 25; // 取消准备踢出时间戳
+
+  // 游戏内信息
+  int32 hp = 40; // 玩家剩余血量
+  int32 point = 41; // 分数（用于结算）
+  int32 score = 42; // 积分（用于排行榜排名）
+  bool escape = 43; // 是否逃跑
+  bool trusteeship = 44; // 托管中
+  bool done = 45; // 完成（用于组队模式）
+
+  MemberType srv_member = 51; // 服务器角色
+}
+
+//通用请求
+message PushReq {
+  CmdId cmd = 1;
+  bytes body = 2;
+}
+
+//通用响应、推送
+message PushRes {
+  CmdId cmd = 1;
+  bytes body = 2;
+  int32 code = 3; // 错误码
+  string msg = 4; // 错误信息
+  int64 timestamp = 5;
+}
+
+//服务器时间
+message ServerTimeRes {
+  int64 time = 1;
+}
+
+message JumpReq {
+  string uid = 1;
+  JumpResult result = 2; // 跳跃结果
+  enum JumpResult {
+    JR_Excellent = 0; // Excellent判定
+    JR_Perfect = 1; // Perfect判定
+    JR_Good = 2; // Good判定
+    JR_Fail = 3; // Fail判定 / 掉入平台外
+    JR_Normal = 4; // Normal判定 / 跳跃后仍和跳跃前位于同一平台
+  };
+}
+
+enum GameProcess {
+  GP_None = 0;
+}
+
+message GameProcessData {
+  GameProcess process = 1;
+  int64 process_start_time = 2; // 阶段开始时间
+  int64 process_end_time = 3;   // 阶段结束时间
+}
+
+
+message RankData {
+  string  user_id = 1;
+  int64   score = 2;
+  int32   rank = 3;           // 排名(可选，会在query时携带) 从 1 开始
+}
+
+enum LeaderboardType {
+  LT_Today = 0;   // 日排行榜
+  LT_Week = 1;  // 周排行榜
+  LT_Total = 2; // 总排行榜
+}
+
+message RankQueryReq {
+  int64 app_id = 1;                       // APP ID
+  int64 game_id = 2;                      // 游戏 ID
+  LeaderboardType name = 3;               // 排行榜类型
+  google.protobuf.Timestamp date = 4;     // 排行榜日期
+  int32  top_k = 5;                       // 查询排名前k名
+}
+
+message RankQueryResp {
+  repeated RankData data = 1;
+}
