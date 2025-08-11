@@ -26,7 +26,7 @@ public:
     inline int get_eid() const { return _eid; }
     inline void set_eid(int eid) { _eid = eid; }
 
-    template< IsComponent T, class... Args >
+    template<IsComponent T, class... Args>
     void add_component(Args&&... args);
 
     template<IsComponent T>

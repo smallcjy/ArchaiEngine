@@ -20,6 +20,7 @@ private:
 class OutputBitStream;
 class InputBitStream;
 
+// 可序列化约束
 template <typename T>
 concept NetSerializable =
 std::is_class_v<T> &&

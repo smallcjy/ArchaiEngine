@@ -15,7 +15,7 @@ public:
     void enter_space(Space* space) { _space = space; }
     void leave_space() { _space = nullptr; }
     inline Space* get_space() { return _space; }
-
+    
 private:
     Space* _space = nullptr;
 };
