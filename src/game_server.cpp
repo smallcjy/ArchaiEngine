@@ -2,6 +2,7 @@
 #include "echo_service.h"
 #include "space_service.h"
 #include "wheel_timer.h"
+#include "util/queue_timer.h"
 
 #include <google/protobuf/stubs/common.h>
 #include <event2/event.h>
@@ -9,6 +10,7 @@
 
 struct event_base* EVENT_BASE = nullptr;
 WheelTimer G_Timer{ 33, 1024 };
+QueueTimer G_QueueTimer{ 1 };
 
 const char* HOST = "0.0.0.0";
 const int PORT = 1988;
@@ -18,12 +20,23 @@ static void on_libevent_update(evutil_socket_t fd, short what, void* arg)
     G_Timer.update();
 }
 
+static void on_libevent_update_on_queue_timer(evutil_socket_t fd, short what, void* arg)
+{
+    G_QueueTimer.update();
+}
+
 void init_timer() {
     struct event* ev = event_new(EVENT_BASE, -1, EV_PERSIST, on_libevent_update, nullptr);
     struct timeval tv = { 0, 33 * 1000 };
     event_add(ev, &tv);
 
     G_Timer.start();
+}
+
+void init_queue_timer() {
+    struct event* ev = event_new(EVENT_BASE, -1, EV_PERSIST, on_libevent_update_on_queue_timer, nullptr);
+    struct timeval tv = { 0, 1 };
+    event_add(ev, &tv);
 }
 
 int main(int argc, char** argv) {

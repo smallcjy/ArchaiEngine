@@ -15,6 +15,7 @@ source_group(network ${CMAKE_CURRENT_SOURCE_DIR}/src/network)
 source_group(combat ${CMAKE_CURRENT_SOURCE_DIR}/src/combat)
 source_group(skill ${CMAKE_CURRENT_SOURCE_DIR}/src/combat/skill)
 source_group(aoi ${CMAKE_CURRENT_SOURCE_DIR}/src/aoi)
+source_group(util ${CMAKE_CURRENT_SOURCE_DIR}/src/util)
 
 file(GLOB GAME_SERVER_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
@@ -30,6 +31,7 @@ file(GLOB GAME_SERVER_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/combat/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/combat/skill/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/aoi/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/util/*.h
 )
 
 add_executable(game_server ${GAME_SERVER_SRCS} ${GAME_SERVER_HEADERS})

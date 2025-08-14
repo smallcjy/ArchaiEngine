@@ -4,6 +4,27 @@
         "xstring": "cpp",
         "chrono": "cpp",
         "system_error": "cpp",
-        "xlocale": "cpp"
+        "xlocale": "cpp",
+        "memory": "cpp",
+        "concepts": "cpp",
+        "unordered_map": "cpp",
+        "type_traits": "cpp",
+        "bitset": "cpp",
+        "filesystem": "cpp",
+        "functional": "cpp",
+        "locale": "cpp",
+        "optional": "cpp",
+        "thread": "cpp",
+        "unordered_set": "cpp",
+        "variant": "cpp",
+        "vector": "cpp",
+        "xhash": "cpp",
+        "mutex": "cpp",
+        "algorithm": "cpp",
+        "charconv": "cpp",
+        "iomanip": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "queue": "cpp"
     }
 }

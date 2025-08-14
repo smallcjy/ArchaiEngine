@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+// 网格坐标
 struct GridPos {
     int x, y;
     bool operator==(const GridPos& other) const {
@@ -15,6 +16,7 @@ struct GridPos {
     }
 };
 
+// 重载哈希运算符
 namespace std {
     template<>
     struct hash<GridPos> {
@@ -24,6 +26,7 @@ namespace std {
     };
 }
 
+// 每个网格储存的实体列表
 struct Grid {
     std::unordered_set<int> entities;
 };
@@ -62,7 +65,7 @@ private:
     std::vector<int> _get_entities_in_circle(float x, float y, float radius, const std::unordered_map<GridPos, Grid>& grids);
 
 private:
-    size_t _grid_size;
+    size_t _grid_size; // 网格大小
     float _max_view_radius;
 
     std::mutex _data_mutex;
