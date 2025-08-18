@@ -41,6 +41,7 @@ void TcpServer::start(struct event_base* base)
         spdlog::error("Couldn't create listener for ipv4");
         return;
     }
+
     evconnlistener_set_error_cb(_listener, accept_error_cb);
 
     sockaddr_in6 addr_v6{};
