@@ -3,6 +3,7 @@
 #include "space_service.h"
 #include "wheel_timer.h"
 #include "util/queue_timer.h"
+#include "util/rand.h"
 
 #include <google/protobuf/stubs/common.h>
 #include <event2/event.h>
